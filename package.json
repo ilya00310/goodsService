@@ -5,14 +5,19 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start_service_remainder": "node src/service_remainder/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/autoload": "^6.0.2",
     "dotenv": "^16.4.5",
     "fastify": "^5.1.0",
+    "fastify-plugin": "^5.0.1",
+    "knex": "^3.1.0",
+    "objection": "^3.1.5",
     "pg": "^8.13.1",
-    "pug": "^3.0.3"
+    "pug": "^3.0.3",
+    "sqlite3": "^5.1.7"
   }
 }

@@ -1,0 +1,2 @@
+service_remainders:
+	npm run start_service_remainder
