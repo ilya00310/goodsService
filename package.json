@@ -5,19 +5,32 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start_service_remainder": "node src/service_remainder/index.js"
+    "start_service_remainder": "nodemon src/service_remainder/index.js",
+    "start_service_history": "nodemon src/service_history/index.js",
+    "migrate:make": "knex migrate:make",
+    "migrate:latest": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "seed:make": "knex seed:make",
+    "seed:run": "knex seed:run"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@fastify/autoload": "^6.0.2",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "fastify": "^5.1.0",
     "fastify-plugin": "^5.0.1",
     "knex": "^3.1.0",
+    "lodash": "^4.17.21",
+    "nodemon": "^3.1.7",
     "objection": "^3.1.5",
     "pg": "^8.13.1",
+    "pg-hstore": "^2.3.4",
     "pug": "^3.0.3",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/sequelize": "^4.28.20"
   }
 }

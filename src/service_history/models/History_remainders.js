@@ -8,16 +8,16 @@ export
     };
 
     static get idColumn() {
-        return 'Id';
+        return 'id';
     }
     static get jsonSchema() {
         return {
             type: 'object',
-            required: ['product_plu', 'date', 'action'],
+            required: ['shop_id', 'date', 'action'],
 
             properties: {
                 id: { type: 'integer' },
-                product_plu: { type: 'integer' },
+                shop_id: { type: 'integer' },
                 date: { type: 'string', format: 'date' },
                 action: { type: 'string' },
             }

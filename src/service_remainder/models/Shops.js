@@ -1,5 +1,7 @@
 import { Model } from 'objection';
+import { pg } from '../db_connection/connection.js'
 
+Model.knex(pg)
 export
     class Shops extends Model {
     static get tableName() {

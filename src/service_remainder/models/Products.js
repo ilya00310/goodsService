@@ -1,4 +1,7 @@
 import { Model } from 'objection';
+import { pg } from '../db_connection/connection.js'
+
+Model.knex(pg)
 
 export
     class Products extends Model {
@@ -12,7 +15,7 @@ export
     static get jsonSchema() {
         return {
             type: 'object',
-            required: ['plu', 'name'],
+            required: ["plu", "name"],
 
             properties: {
                 id: { type: 'integer' },

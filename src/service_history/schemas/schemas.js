@@ -1,4 +1,5 @@
-// фильтр по shop_id, plu, action
+import *  as models from '../models/Models.js'
+
 export const scheme_filter_history = {
     schema: {
         querystring: {
@@ -6,19 +7,16 @@ export const scheme_filter_history = {
             properties: {
                 name: { type: 'string' },
                 value: { type: 'string' },
-            }
+            },
+            required: ['name', 'value']
         }
-    }
-}
-
-export const scheme_filter_history_date = {
-    schema: {
-        querystring: {
-            type: 'object',
-            properties: {
-                name: { type: 'string' },
-                value: { type: 'string', format: 'date' }
-            }
+    },
+    response: {
+        200: {
+            anyof: [
+                { $ref: models.History_products },
+                { $ref: models.History_remainders },
+            ]
         }
     }
 }

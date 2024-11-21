@@ -1,7 +1,7 @@
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 import autoload from '@fastify/autoload'
-// плагин автозагрузк. Загружает все плагины в директории и автоматически настраивает маршруты
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 export default async function (

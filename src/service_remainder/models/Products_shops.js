@@ -1,7 +1,9 @@
 import { Model } from 'objection';
 import { Shops } from './Shops.js';
 import { Products } from './Products.js';
+import { pg } from '../db_connection/connection.js'
 
+Model.knex(pg)
 export
     class Products_shops extends Model {
     static get tableName() {
@@ -30,13 +32,13 @@ export
                 relation: Model.BelongsToOneRelation,
                 modelClass: Shops,
                 join: {
-                    from: 'product_shops.shop_id',
+                    from: 'products_shops.shop_id',
                     to: 'shops.id'
                 },
                 relation: Model.BelongsToOneRelation,
                 modelClass: Products,
                 join: {
-                    from: 'product_shops.product_id',
+                    from: 'products_shops.product_id',
                     to: 'products.id'
                 }
             }

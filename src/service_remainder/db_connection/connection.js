@@ -1,6 +1,11 @@
 import knex from 'knex';
-// конфигурация knex
+import dotenv from 'dotenv';
+
+dotenv.config()
+
 export const pg = knex({
     client: 'pg',
-    connection: process.env.DB_CONNECTION_STRING,
+    connection: {
+        connectionString: process.env.DB_CONNECTION_STRING
+    }
 });

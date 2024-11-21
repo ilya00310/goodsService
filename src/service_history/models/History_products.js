@@ -7,7 +7,7 @@ export
     };
 
     static get idColumn() {
-        return 'Id';
+        return 'id';
     }
     static get jsonSchema() {
         return {
@@ -16,7 +16,7 @@ export
 
             properties: {
                 id: { type: 'integer' },
-                shop_id: { type: 'integer' },
+                product_plu: { type: 'integer' },
                 date: { type: 'string', format: 'date' },
                 action: { type: 'string' },
             }
@@ -28,8 +28,8 @@ export
                 relation: Model.BelongsToOneRelation,
                 modelClass: Products,
                 join: {
-                    from: 'history_products.plu',
-                    to: 'products.id'
+                    from: 'history_products.product_plu',
+                    to: 'products.plu'
                 },
             }
 

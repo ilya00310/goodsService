@@ -1,5 +1,7 @@
 import { Model } from 'objection';
+import { pg } from '../db_connection/connection.js'
 
+Model.knex(pg)
 export
     class Orders extends Model {
     static get tableName() {
@@ -7,7 +9,7 @@ export
     };
 
     static get idColumn() {
-        return 'Id';
+        return 'id';
     }
     static get jsonSchema() {
         return {
