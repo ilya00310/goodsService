@@ -29,3 +29,5 @@ make start_service_history
 ```
 
 4. Производить соответсвующие запросы через postman или curl
+
+Диаграмма сущностей: https://app.diagrams.net/#G1StZrgCmZld911lX6VCdgGpvLqNleBket#%7B%22pageId%22%3A%22wkyGTkeGAAGISU56_LCQ%22%7D
