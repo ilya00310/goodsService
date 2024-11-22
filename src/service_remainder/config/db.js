@@ -15,7 +15,7 @@ export const pool = new Client({
 export const db_connector = fastifyPlugin(async (fastify, options) => {
     try {
         await pool.connect()
-        console.log("db connected succesfully")
+        console.log("db connected successfully")
         fastify.decorate('db', { pool });
         fastify.addHook('onClose', async (instance, done) => {
             await instance.db.pool.end();
