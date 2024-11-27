@@ -1,5 +1,4 @@
 import * as models from '../models/Models.js';
-import { format } from 'date-fns'
 import _ from 'lodash';
 
 export const history_filter = async (req, reply) => {
