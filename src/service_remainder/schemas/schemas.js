@@ -23,10 +23,10 @@ export const scheme_filter_product = {
         queryString: {
             type: 'object',
             properties: {
+                plu: { type: 'string' },
                 name: { type: 'string' },
-                value: { type: 'string' },
             },
-            required: ['name', 'value']
+            required: []
         },
         response: {
             200: models.Products.jsonSchema
@@ -39,10 +39,15 @@ export const scheme_filter_remainders = {
         queryString: {
             type: 'object',
             properties: {
-                name: { type: 'string' },
-                value: { type: 'string' }
+                plu: { type: 'string' },
+                shop_id: { type: 'string' },
+                action: { type: 'string' },
+                product_count_up: { type: 'string' },
+                product_count_from: { type: 'string' },
+                order_count_up: { type: 'string' },
+                order_count_from: { type: 'string' },
             },
-            required: ['name', 'value']
+            required: []
         },
         response: {
             200: {

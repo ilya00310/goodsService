@@ -94,20 +94,28 @@ export const decrease_remainder = async (req, reply) => {
 }
 
 export const products_filter = async (req, reply) => {
-    const filter_name = req.query.name;
-    const filter_value = req.query.value
+    const filter = req.query;
+    let product;
     try {
-        const filter_products = await models.Products.query()
-            .select('id', 'plu', 'name')
-            .where(filter_name, filter_value)
-            .first()
+        if (filter.plu) {
+            product = await models.Products.query()
+                .select('id', 'plu', 'name')
+                .where('plu', filter.plu)
+                .first()
+        }
+        if (filter.name) {
+            product = await models.Products.query()
+                .select('id', 'plu', 'name')
+                .where('name', filter.name)
+                .first()
+        }
         await modelsHistory.History_products.query()
             .insert({
-                product_plu: filter_products.plu,
+                product_plu: product.plu,
                 date: format(new Date(), 'yyyy-MM-dd'),
                 action: 'Filter products'
             });
-        return reply.code(200).send(filter_products)
+        return reply.code(200).send(product)
 
     } catch (err) {
         throw new Error(err);
@@ -115,74 +123,68 @@ export const products_filter = async (req, reply) => {
 }
 
 export const remainder_filters = async (req, reply) => {
-    const filter_name = req.query.name;
-    const filter_value = req.query.value;
-    let shop_id_for_count_filter;
-    let result;
+    const filter = req.query;
+    const remainder = models.Products_shops.query().select('id', 'shop_id', 'product_id', 'product_count');
+
     try {
-        if (filter_name === 'plu') {
+        if (filter.plu) {
             const id_products = await models.Products.query()
                 .select('id')
-                .where('plu', filter_value)
+                .where('plu', filter.plu)
                 .first();
-            result = await models.Products_shops.query()
-                .select('id', 'shop_id', 'product_id', 'product_count')
-                .where('product_id', id_products.id)
-                .first()
-        } else if (filter_name === 'shop_id') {
-            result = await models.Products_shops.query()
-                .select('id', 'shop_id', 'product_id', 'product_count')
-                .where('shop_id', filter_value)
-                .first();
+            if (!id_products) {
+                reply.code(404).send('ID Not found')
+            }
+            remainder.where('product_id', id_products.id)
         }
-        else if (filter_name === 'product_count_from' || filter_name === 'product_count_up') {
-            shop_id_for_count_filter = Number(req.query.shop_id)
-            const max_value = await models.Products_shops.query()
-                .max('product_count')
-                .first();
-            const first_value_product = filter_name === 'product_count_from' ? filter_value : 0;
-            const last_value_product = filter_name === 'product_count_up' ? filter_value : max_value.max
-            result = await models.Products_shops.query()
-                .select('id', 'shop_id', 'product_id', 'product_count')
-                .where('product_count', '>=', first_value_product)
-                .where('product_count', '<=', last_value_product)
-                .where('shop_id', shop_id_for_count_filter)
+        if (filter.shop_id) {
+            remainder.where('shop_id', filter.shop_id)
         }
-        else if (filter_name === 'order_count_from' || filter_name === 'order_count_up') {
-            shop_id_for_count_filter = Number(req.query.shop_id)
-            const max_remainders = await models.Info_orders.query()
-                .select(models.Info_orders.raw('MAX(inf.product_count - prod.product_count) AS max_remainder'))
+        if (filter.product_count_from) {
+            remainder.where('product_count', '>=', filter.product_count_from)
+
+        }
+        if (filter.product_count_up) {
+            remainder.where('product_count', '<=', filter.product_count_up)
+
+        }
+        if (filter.order_count_from || filter.order_count_up) {
+            if (!filter.shop_id) {
+                return reply.code(404).send('Store ID missing for filter')
+            }
+            const shop_id_for_count_filter = Number(req.query.shop_id)
+            const orderCounts = await models.Info_orders.query()
+                .select('inf.product_id', models.Info_orders.raw('SUM(inf.product_count - COALESCE(prod.product_count, 0)) AS order_count'))
                 .from('info_orders AS inf')
                 .leftJoin('products_orders AS prod', function () {
                     this.on('inf.order_id', '=', 'prod.order_id')
                         .andOn('inf.product_id', '=', 'prod.product_id')
-                        .andOn('inf.shop_id', '=', 'prod.product_id')
-                })
-                .first();
-            const first_value_orders = filter_name === 'order_count_from' ? filter_value : 0;
-            const last_value_orders = filter_name === 'order_count_up' ? filter_value : max_remainders.max_remainder
-            result = await models.Info_orders.query()
-                .select('inf.id',
-                    'inf.order_id',
-                    'inf.product_id',
-                    'inf.shop_id',
-                    models.Info_orders.raw('(inf.product_count - prod.product_count) AS products_count'))
-                .from('info_orders AS inf')
-                .leftJoin('products_orders AS prod', function () {
-                    this.on('prod.order_id', '=', 'inf.order_id')
-                        .andOn('prod.product_id', '=', 'inf.product_id')
-                        .andOn('inf.shop_id', '=', 'prod.product_id')
+                        .andOn('inf.shop_id', '=', 'prod.shop_id');
                 })
                 .where('inf.shop_id', shop_id_for_count_filter)
-                .whereRaw((`inf.product_count - prod.product_count >= ? AND inf.product_count - prod.product_count  <= ?`), [first_value_orders, last_value_orders])
+                .groupBy('inf.product_id');
+            const orderCountMap = {};
+            orderCounts.forEach(order => {
+                orderCountMap[order.product_id] = order.order_count;
+            });
+            if (filter.order_count_from) {
+                remainder.whereIn('product_id', Object.keys(orderCountMap).filter(id => orderCountMap[id] >= filter.order_count_from));
+            }
+            if (filter.order_count_up) {
+                remainder.whereIn('product_id', Object.keys(orderCountMap).filter(id => orderCountMap[id] <= filter.order_count_up));
+            }
         }
-        await modelsHistory.History_remainders.query()
+        const results = await remainder;
+        if (results.length === 0) {
+            return reply.code(404).send('No remainders found');
+        }
+        const shop_id = results[0].shop_id; await modelsHistory.History_remainders.query()
             .insert({
-                shop_id: shop_id_for_count_filter ?? result.shop_id,
+                shop_id,
                 date: format(new Date(), 'yyyy-MM-dd'),
                 action: 'filter remainders'
             });
-        return reply.code(200).send(result)
+        return reply.code(200).send(results)
     } catch (err) {
         throw new Error(err)
     }
