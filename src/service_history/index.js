@@ -12,7 +12,7 @@ app.register(routes)
 async function start() {
 
     await app.register(App)
-    const port = 8081
+    const port = 8080
     await app.listen({
         host: '0.0.0.0',
         port,

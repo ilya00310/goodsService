@@ -20,12 +20,10 @@ make migrate_latest
 make seed_run
 ```
 
-3. Запустить требуемый сервис
+3. Запустить сервисы
 
 ```
-make start_service_remainders
-// or
-make start_service_history
+make start_services
 ```
 
 4. Производить соответсвующие запросы через postman или curl

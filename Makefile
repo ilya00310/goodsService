@@ -1,7 +1,7 @@
-start_service_remainders:
-	npm run start_service_remainder
-start_service_history:
-	npm run start_service_history
+start_services:
+	@npm run start_service_remainder &
+	npm run start_service_history &
+	wait
 migrate_latest:
 	npm run migrate:latest
 seed_run:
