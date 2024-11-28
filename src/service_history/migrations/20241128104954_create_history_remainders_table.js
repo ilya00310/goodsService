@@ -4,8 +4,6 @@ export const up = async (knex) => {
         table.integer('product_plu');
         table.date('date');
         table.string('action')
-
-        table.foreign('product_plu').references('plu').inTable('products').onDelete('CASCADE')
     })
 }
 export const down = async (knex) => await knex.schema.dropTableIfExists('history_products')

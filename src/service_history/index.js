@@ -2,6 +2,8 @@ import fastify from 'fastify'
 import App from './app.js'
 import { db_connector } from './config/db.js'
 import { routes } from './routes/index.js'
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = fastify({
     logger: true
@@ -12,7 +14,7 @@ app.register(routes)
 async function start() {
 
     await app.register(App)
-    const port = 8080
+    const port = process.env.PORT_HISTORY || 8080
     await app.listen({
         host: '0.0.0.0',
         port,

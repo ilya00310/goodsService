@@ -1,6 +1,35 @@
 import * as models from '../models/Models.js';
 import _ from 'lodash';
 
+export const add_history_products = async (req, reply) => {
+    const { product_plu, date, action } = req.body
+    try {
+        await models.History_products.query().insert({
+            product_plu,
+            date,
+            action,
+        })
+        reply.code(201)
+    } catch (err) {
+        throw new Error(err);
+    }
+}
+
+export const add_history_remainders = async (req, reply) => {
+    const { shop_id, date, action } = req.body
+    try {
+        await models.History_remainders.query().insert({
+            shop_id,
+            date,
+            action,
+        })
+        reply.code(201)
+    } catch (err) {
+        throw new Error(err);
+    }
+}
+
+
 export const history_filter = async (req, reply) => {
     const filter = req.query;
     const page = req.query.page ? req.query.page - 1 : 0;

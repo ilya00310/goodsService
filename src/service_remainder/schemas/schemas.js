@@ -52,8 +52,8 @@ export const scheme_filter_remainders = {
         response: {
             200: {
                 anyof: [
-                    { $ref: models.Info_orders },
-                    { $ref: models.Products_shops },
+                    { $ref: models.Info_orders.jsonSchema },
+                    { $ref: models.Products_shops.jsonSchema },
                 ]
             }
         }

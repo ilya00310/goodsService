@@ -1,6 +1,6 @@
 import * as models from '../models/Models.js';
-import * as modelsHistory from '../../service_history/models/Models.js';
 import { format } from 'date-fns'
+import axios from 'axios';
 
 export const create_product = async (req, reply) => {
     const { plu, name } = req.body;
@@ -9,12 +9,16 @@ export const create_product = async (req, reply) => {
             plu,
             name,
         })
-        await modelsHistory.History_products.query()
-            .insert({
+        try {
+            await axios.post('http://localhost:8080/history_products', {
                 product_plu: plu,
                 date: format(new Date(), 'yyyy-MM-dd'),
                 action: 'Insert new product'
-            });
+            })
+        }
+        catch (err) {
+            console.log(`The action was not recorded in history: ${err.message}`)
+        }
         reply.code(201)
     } catch (err) {
         throw new Error(err);
@@ -29,12 +33,16 @@ export const create_remainder = async (req, reply) => {
             product_id,
             product_count,
         })
-        await modelsHistory.History_remainders.query()
-            .insert({
+        try {
+            await axios.post('http://localhost:8080/history_remainders', {
                 shop_id,
                 date: format(new Date(), 'yyyy-MM-dd'),
-                action: 'insert new remainders'
-            });
+                action: 'Insert new remainder'
+            })
+        }
+        catch (err) {
+            console.log(`The action was not recorded in history: ${err.message}`)
+        }
         reply.code(201)
     } catch (err) {
         throw new Error(err)
@@ -55,12 +63,16 @@ export const increase_remainder = async (req, reply) => {
             .patch({ product_count: new_count_product })
             .where('shop_id', shop_id)
             .where('product_id', product_id)
-        await modelsHistory.History_remainders.query()
-            .insert({
+        try {
+            await axios.post('http://localhost:8080/history_remainders', {
                 shop_id,
                 date: format(new Date(), 'yyyy-MM-dd'),
-                action: 'increase remainders'
+                action: 'Increase remainder'
             })
+        }
+        catch (err) {
+            console.log(`The action was not recorded in history: ${err.message}`)
+        }
         reply.code(200)
     } catch (err) {
         console.log(err.data[0].params)
@@ -81,12 +93,16 @@ export const decrease_remainder = async (req, reply) => {
             .patch({ product_count: new_count_product })
             .where('shop_id', shop_id)
             .where('product_id', product_id)
-        await modelsHistory.History_remainders.query()
-            .insert({
+        try {
+            await axios.post('http://localhost:8080/history_remainders', {
                 shop_id,
                 date: format(new Date(), 'yyyy-MM-dd'),
-                action: 'decrease remainders'
+                action: 'Decrease remainder'
             })
+        }
+        catch (err) {
+            console.log(`The action was not recorded in history: ${err.message}`)
+        }
         reply.code(200)
     } catch (err) {
         throw new Error(err)
@@ -109,13 +125,21 @@ export const products_filter = async (req, reply) => {
                 .where('name', filter.name)
                 .first()
         }
-        await modelsHistory.History_products.query()
-            .insert({
-                product_plu: product.plu,
+        if (!product) {
+            reply.code(200).send('nothing found')
+        }
+        const product_plu = product.plu
+        try {
+            await axios.post('http://localhost:8080/history_products', {
+                product_plu,
                 date: format(new Date(), 'yyyy-MM-dd'),
                 action: 'Filter products'
-            });
-        return reply.code(200).send(product)
+            })
+        }
+        catch (err) {
+            console.log(`The action was not recorded in history: ${err.message}`)
+        }
+        reply.code(200).send(product)
 
     } catch (err) {
         throw new Error(err);
@@ -178,12 +202,13 @@ export const remainder_filters = async (req, reply) => {
         if (results.length === 0) {
             return reply.code(404).send('No remainders found');
         }
-        const shop_id = results[0].shop_id; await modelsHistory.History_remainders.query()
-            .insert({
-                shop_id,
-                date: format(new Date(), 'yyyy-MM-dd'),
-                action: 'filter remainders'
-            });
+        const shop_id = results[0].shop_id;
+
+        await axios.post('http://localhost:8080/history_remainders', {
+            shop_id,
+            date: format(new Date(), 'yyyy-MM-dd'),
+            action: 'Decrease remainder'
+        })
         return reply.code(200).send(results)
     } catch (err) {
         throw new Error(err)

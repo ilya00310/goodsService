@@ -5,27 +5,32 @@
 1. Прописать свой .env файл, с данными локальной бд, формата:
 
 ```
+PORT= 'some port'
 DB_USER='some user'
 DB_HOST="localhost"
 DB_NAME="some name db"
 DB_PASSWORD="some password db"
 DB_PORT=some port
 DB_CONNECTION_STRING = postgres://user:password@localhost:port/db name
+DB_DIALECT="postgres"
+
+PORT_HISTORY= 'some port'
+DB_USER_HISTORY='postgres'
+DB_NAME_HISTORY="some name db"
+DB_PASSWORD_HISTORY="some password db"
+DB_CONNECTION_STRING_HISTORY = postgres://user:password@localhost:port/db name
 ```
 
 2. Создать и наполнить таблицы:
 
 ```
-make migrate_latest
-make seed_run
+make migrate_seed_services
 ```
 
-3. Запустить требуемый сервис
+3. Запустить сервисы
 
 ```
-make start_service_remainders
-// or
-make start_service_history
+make start_services
 ```
 
 4. Производить соответсвующие запросы через postman или curl

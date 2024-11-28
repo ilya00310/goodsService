@@ -1,5 +1,6 @@
 import { Model } from 'objection';
-import { Products } from '../../service_remainder/models/Products.js';
+import { pg } from '../db_connection/connection.js'
+Model.knex(pg)
 export
     class History_products extends Model {
     static get tableName() {
@@ -22,17 +23,4 @@ export
             }
         }
     };
-    static get relationMappings() {
-        return {
-            children: {
-                relation: Model.BelongsToOneRelation,
-                modelClass: Products,
-                join: {
-                    from: 'history_products.product_plu',
-                    to: 'products.plu'
-                },
-            }
-
-        }
-    }
 }
